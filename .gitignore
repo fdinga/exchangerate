@@ -1,0 +1,35 @@
+#################
+## JAVA
+#################
+
+target/
+
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+#################
+## IntelliJ
+#################
+
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dataSources.ids
+.idea/*.iws
+.idea/libraries/**
+.idea/artifacts/**
+.idea/dataSources.local.xml
+.idea/dictionaries/*.xml
+
+###############
+## Various
+###############
+
+# Mac
+.DS_Store
+
+# npm
+npm-debug.log
