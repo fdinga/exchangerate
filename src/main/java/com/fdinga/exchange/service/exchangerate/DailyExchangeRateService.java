@@ -3,7 +3,8 @@ package com.fdinga.exchange.service.exchangerate;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  * @author Florin Dinga
@@ -11,5 +12,5 @@ import java.util.Date;
 @Validated
 public interface DailyExchangeRateService {
 
-    DailyExchangeRates getEuroDailyExchangeRates(@NotNull(message = "Date should not bn null") Date date);
+    List<ExchangeRate> getEuroDailyExchangeRates(@NotNull(message = "Date should not be null") LocalDate date);
 }

@@ -16,7 +16,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -29,10 +29,10 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ECBEuroExchangeRateClientTest {
 
-    public static final String ECB_SERVICE_URL = "http://www.ecb.europa.eu/";
-    public static final String TARGET_CURRENCY = "USD";
-    public static final BigDecimal RATE = new BigDecimal("1.0764");
-    public static final Date CURRENT_DATE = new Date();
+    private static final String ECB_SERVICE_URL = "http://www.ecb.europa.eu/";
+    private static final String TARGET_CURRENCY = "USD";
+    private static final BigDecimal RATE = new BigDecimal("1.0764");
+    private static final LocalDate CURRENT_DATE = LocalDate.now();
 
     @InjectMocks
     private ECBEuroExchangeRateClient ecbEuroExchangeRateClient;
