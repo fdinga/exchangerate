@@ -1,6 +1,6 @@
 package com.fdinga.exchange.config;
 
-import com.fdinga.exchange.controller.exchangerate.StringToLocalDateConverter;
+import com.fdinga.exchange.controller.converter.StringToLocalDateConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

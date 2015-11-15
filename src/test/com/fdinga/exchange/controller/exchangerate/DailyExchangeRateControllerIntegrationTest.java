@@ -2,6 +2,7 @@ package com.fdinga.exchange.controller.exchangerate;
 
 import com.fdinga.exchange.ExchangeRateApplication;
 import com.fdinga.exchange.config.ApplicationConfig;
+import com.fdinga.exchange.controller.converter.StringToLocalDateConverter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +35,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(properties = { "scheduler.exchangerate = * * * * * *"})
 public class DailyExchangeRateControllerIntegrationTest {
 
-    public static final String EXCHANGE_RATE_API_PATTERN = "/v1/exchange/%s/date/%s";
+    private static final String EXCHANGE_RATE_API_PATTERN = "/v1/exchange/%s/date/%s";
+    private static final String TARGET_CURRENCY_CODE = "USD";
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -88,20 +90,52 @@ public class DailyExchangeRateControllerIntegrationTest {
 
     @Test
     public void testGetDailyExchangeRatesWithDayOfWeekReturnsOKWithContent() throws Exception {
+        LocalDate dayOfWeek = getDayOfWeek();
+
+        this.mockMvc.perform(get(String.format(EXCHANGE_RATE_API_PATTERN, DailyExchangeRateController.EURO_CURRENCY_CODE,
+                                               dayOfWeek.format(StringToLocalDateConverter.DATE_FORMATTER))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(31)))
+                .andExpect(jsonPath("$[0].targetCurrency").value(notNullValue()))
+                .andExpect(jsonPath("$[0].targetCurrency", is(TARGET_CURRENCY_CODE)))
+                .andExpect(jsonPath("$[0].rate").value(notNullValue()))
+                .andExpect(jsonPath("$[0].rate", isA(Double.class)));
+
+    }
+
+    @Test
+    public void testGetDailyExchangeRatesWithInvalidTargetCurrrencyReturnsBadRequest() throws Exception {
+        this.mockMvc.perform(get(String.format(EXCHANGE_RATE_API_PATTERN + "?targetCurrency=%s",
+                                               DailyExchangeRateController.EURO_CURRENCY_CODE,
+                                               LocalDate.now().format(StringToLocalDateConverter.DATE_FORMATTER),
+                                               "us")))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testGetDailyExchangeRatesWithTargetCurrrencyAndDayOfWeekReturnsOKWithContent() throws Exception {
+        LocalDate dayOfWeek = getDayOfWeek();
+
+        this.mockMvc.perform(get(String.format(EXCHANGE_RATE_API_PATTERN + "?targetCurrency=%s",
+                                               DailyExchangeRateController.EURO_CURRENCY_CODE,
+                                               dayOfWeek.format(StringToLocalDateConverter.DATE_FORMATTER),
+                                               TARGET_CURRENCY_CODE)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].targetCurrency").value(notNullValue()))
+                .andExpect(jsonPath("$[0].targetCurrency", is(TARGET_CURRENCY_CODE)))
+                .andExpect(jsonPath("$[0].rate").value(notNullValue()))
+                .andExpect(jsonPath("$[0].rate", isA(Double.class)));
+
+    }
+
+    private LocalDate getDayOfWeek() {
         LocalDate currentDate = LocalDate.now();
 
         if (currentDate.getDayOfWeek() == DayOfWeek.SATURDAY || currentDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
             currentDate = currentDate.minusDays(2);
         }
 
-        this.mockMvc.perform(get(String.format(EXCHANGE_RATE_API_PATTERN, DailyExchangeRateController.EURO_CURRENCY_CODE,
-                                               currentDate.format(StringToLocalDateConverter.DATE_FORMATTER))))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(31)))
-                .andExpect(jsonPath("$[0].targetCurrency").value(notNullValue()))
-                .andExpect(jsonPath("$[0].targetCurrency", is("USD")))
-                .andExpect(jsonPath("$[0].rate").value(notNullValue()))
-                .andExpect(jsonPath("$[0].rate", isA(Double.class)));
-
+        return currentDate;
     }
 }

@@ -1,4 +1,4 @@
-package com.fdinga.exchange.controller.exchangerate;
+package com.fdinga.exchange.controller.converter;
 
 import org.springframework.core.convert.converter.Converter;
 

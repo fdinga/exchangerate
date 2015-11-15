@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalDate;
+import java.util.Currency;
 import java.util.List;
 
 @Slf4j
@@ -24,8 +26,10 @@ public class DailyExchangeRateController {
 
     @RequestMapping("/v1/exchange/" + EURO_CURRENCY_CODE + "/date/{date}")
     @ResponseBody
-    public List<ExchangeRate> getForeignExchangeRates(@PathVariable(DATE) LocalDate date) {
-        log.debug("GET foreign exchange rate for currency '{}' and date '{}'", EURO_CURRENCY_CODE, date);
-        return dailyExchangeRateService.getEuroDailyExchangeRates(date);
+    public List<ExchangeRate> getForeignExchangeRates(@PathVariable(DATE) LocalDate date,
+        @RequestParam(value="targetCurrency", required = false) Currency targetCurrency) {
+        log.debug("GET foreign exchange rate for source currency '{}', date '{}' and target currency '{}'",
+                  EURO_CURRENCY_CODE, date, targetCurrency);
+        return dailyExchangeRateService.getEuroDailyExchangeRates(date, targetCurrency);
     }
 }
