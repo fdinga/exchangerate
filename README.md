@@ -21,9 +21,9 @@ java -jar target/exchange-1.0-SNAPSHOT.jar -Xms512M -Xmx512M -Duser.timezone=CET
 
 ### GET Exchange Rates for Euro by date and target currency
 
-Return the conversion rate for Euro to all the currencies for the specified date.
+Returns the conversion rate for Euro to all the ECB supported currencies for the specified date.
 The date needs to be in the interval [currentDate - 90days, currentDate]. Otherwise, the service returns 400 Bad Request.
-The API provides an optional 'targetCurrency' query parameter to filter only the exchange rates of the specified target currency.
+The API provides an optional 'targetCurrency' query parameter to filter only the exchange rates of the specified target currency. 
 
 ### Request
 GET /v1/exchange/eur/date/<b>{date}</b>/?targetCurrency=<b>{targetCurrency}</b>
