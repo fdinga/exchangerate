@@ -66,7 +66,7 @@ public class DailyExchangeRateServiceImplTest {
         assertEquals(exchangeRates, dailyExchangeRates);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ExchangeRateException.class)
     public void testGetDailyExchangeRatesWithPastDateMoreThan90DaysBefore() {
         LocalDate pastDate = DATE.minusDays(DailyExchangeRateServiceImpl.MAX_PAST_DAYS + 1);
         List<ExchangeRate> exchangeRates = setupExchangeRates();
@@ -75,7 +75,7 @@ public class DailyExchangeRateServiceImplTest {
         dailyExchangeRateService.getEuroDailyExchangeRates(pastDate);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ExchangeRateException.class)
     public void testGetDailyExchangeRatesWithFutureDateMoreThan90DaysBefore() {
         LocalDate futureDate = DATE.plusDays(1);
         List<ExchangeRate> exchangeRates = setupExchangeRates();

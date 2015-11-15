@@ -25,12 +25,12 @@ public class DailyExchangeRateServiceImpl implements DailyExchangeRateService {
         LocalDate currentDate = LocalDate.now();
 
         if (date.isAfter(currentDate)) {
-            throw new IllegalArgumentException("Input date should not be in the future");
+            throw new ExchangeRateException("Input date should not be in the future");
         }
 
         if (date.isBefore(currentDate.minusDays(MAX_PAST_DAYS))) {
-            throw new IllegalArgumentException(String.format("Input date should not be more than '%s' days in the past",
-                                                             MAX_PAST_DAYS));
+            throw new ExchangeRateException(String.format("Input date should not be more than '%s' days in the past",
+                                                          MAX_PAST_DAYS));
         }
 
         List<ExchangeRate> dailyExchangeRates = dailyExchangeRatesCache.get(date);
