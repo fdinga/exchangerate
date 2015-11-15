@@ -1,9 +1,11 @@
-package com.fdinga.exchange.service.exchangerate;
+package com.fdinga.exchange.service.exchangerate.loader;
 
 
 import com.fdinga.exchange.client.ecb.ECBEuroExchangeRateClient;
 import com.fdinga.exchange.client.ecb.schema.stub.CurrencyCube;
 import com.fdinga.exchange.client.ecb.schema.stub.DateCube;
+import com.fdinga.exchange.service.exchangerate.DailyExchangeRatesCache;
+import com.fdinga.exchange.service.exchangerate.ExchangeRate;
 import com.fdinga.exchange.util.DateUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +26,7 @@ import static org.mockito.Mockito.when;
  * @author Florin Dinga
  */
 @RunWith(MockitoJUnitRunner.class)
-public class ExchangeRatesLoaderServiceTest {
+public class ExchangeRatesLoaderServiceImplTest {
 
     private static final String TARGET_CURRENCY = "USD";
     private static final LocalDate CURRENT_DATE = LocalDate.now();
@@ -34,7 +36,7 @@ public class ExchangeRatesLoaderServiceTest {
     private static final BigDecimal SECOND_RATE = new BigDecimal("1.0212");
 
     @InjectMocks
-    private ExchangeRatesLoaderService exchangeRatesLoaderService;
+    private ExchangeRatesLoaderServiceImpl exchangeRatesLoaderService;
 
     @Mock
     private ECBEuroExchangeRateClient ecbEuroExchangeRateClient;
@@ -64,6 +66,28 @@ public class ExchangeRatesLoaderServiceTest {
         List<ExchangeRate> secondDailyExchangeRates = new ArrayList<>();
         secondDailyExchangeRates.add(new ExchangeRate(TARGET_CURRENCY, SECOND_RATE));
         verify(dailyExchangeRatesCache).put(SECOND_DATE, secondDailyExchangeRates);
+
+        verifyNoMoreInteractions(dailyExchangeRatesCache);
+    }
+
+    @Test
+    public void testUpdateCurrentDateExchangeRatesWithNoExchangeRatesFound() {
+        when(ecbEuroExchangeRateClient.getCurrentEuroExchangeRate()).thenReturn(null);
+        exchangeRatesLoaderService.updateCurrentDateExchangeRates();
+
+        verifyNoMoreInteractions(dailyExchangeRatesCache);
+    }
+
+    @Test
+    public void testUpdateCurrentDateExchangeRates() {
+        DateCube currentDateCube = setupExchangeRateDateCubes().get(0);
+        when(ecbEuroExchangeRateClient.getCurrentEuroExchangeRate()).thenReturn(currentDateCube);
+
+        exchangeRatesLoaderService.updateCurrentDateExchangeRates();
+
+        List<ExchangeRate> dailyExchangeRates = new ArrayList<>();
+        dailyExchangeRates.add(new ExchangeRate(TARGET_CURRENCY, RATE));
+        verify(dailyExchangeRatesCache).put(CURRENT_DATE, dailyExchangeRates);
 
         verifyNoMoreInteractions(dailyExchangeRatesCache);
     }

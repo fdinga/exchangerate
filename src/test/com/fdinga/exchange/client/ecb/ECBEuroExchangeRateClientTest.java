@@ -58,6 +58,30 @@ public class ECBEuroExchangeRateClientTest {
     }
 
     @Test
+    public void testGetEuroExchangeRatesWithNullReturnedCube() {
+        when(restTemplate.getForObject(ECB_SERVICE_URL + ECBEuroExchangeRateClient.EURO_FX_REF_HISTORY_90_DAYS_XML,
+                                       Envelope.class)).thenReturn(new Envelope());
+
+        List<DateCube> exchangeRates = ecbEuroExchangeRateClient.getEuroExchangeRates();
+
+        assertNotNull(exchangeRates);
+        assertTrue(exchangeRates.isEmpty());
+    }
+
+    @Test
+    public void testGetEuroExchangeRatesWithNullReturnedDateCube() {
+        Envelope envelope = new Envelope();
+        envelope.setCube(new Cube());
+        when(restTemplate.getForObject(ECB_SERVICE_URL + ECBEuroExchangeRateClient.EURO_FX_REF_HISTORY_90_DAYS_XML,
+                                       Envelope.class)).thenReturn(envelope);
+
+        List<DateCube> exchangeRates = ecbEuroExchangeRateClient.getEuroExchangeRates();
+
+        assertNotNull(exchangeRates);
+        assertTrue(exchangeRates.isEmpty());
+    }
+
+    @Test
     public void testGetEuroExchangeRates() {
         Envelope envelope = setupEnvelope();
         when(restTemplate.getForObject(ECB_SERVICE_URL + ECBEuroExchangeRateClient.EURO_FX_REF_HISTORY_90_DAYS_XML,
@@ -68,6 +92,64 @@ public class ECBEuroExchangeRateClientTest {
         assertNotNull(exchangeRates);
         assertEquals(1, exchangeRates.size());
         assertEquals(envelope.getCube().getCube(), exchangeRates);
+    }
+
+    @Test
+    public void testGetCurrentEuroExchangeRateWithNullReturnedEnvelope() {
+        when(restTemplate.getForObject(ECB_SERVICE_URL + ECBEuroExchangeRateClient.EURO_FX_REF_DAILY_XML,
+                                       Envelope.class)).thenReturn(null);
+
+        DateCube currentExchangeRate = ecbEuroExchangeRateClient.getCurrentEuroExchangeRate();
+        assertNull(currentExchangeRate);
+    }
+
+    @Test
+    public void testGetCurrentEuroExchangeRateWithNullReturnedCube() {
+        when(restTemplate.getForObject(ECB_SERVICE_URL + ECBEuroExchangeRateClient.EURO_FX_REF_DAILY_XML,
+                                       Envelope.class)).thenReturn(new Envelope());
+
+        DateCube currentExchangeRate = ecbEuroExchangeRateClient.getCurrentEuroExchangeRate();
+        assertNull(currentExchangeRate);
+    }
+
+    @Test
+    public void testGetCurrentEuroExchangeRateWithNullReturnedDateCubes() {
+        Envelope envelope = new Envelope();
+        envelope.setCube(new Cube());
+        when(restTemplate.getForObject(ECB_SERVICE_URL + ECBEuroExchangeRateClient.EURO_FX_REF_DAILY_XML,
+                                       Envelope.class)).thenReturn(envelope);
+
+        DateCube currentExchangeRate = ecbEuroExchangeRateClient.getCurrentEuroExchangeRate();
+        assertNull(currentExchangeRate);
+    }
+
+    @Test
+    public void testGetCurrentEuroExchangeRateWithEmptyReturnedDateCubes() {
+        Envelope envelope = setupEnvelope();
+        envelope.getCube().getCube().clear();
+        when(restTemplate.getForObject(ECB_SERVICE_URL + ECBEuroExchangeRateClient.EURO_FX_REF_DAILY_XML,
+                                       Envelope.class)).thenReturn(envelope);
+
+        DateCube currentExchangeRate = ecbEuroExchangeRateClient.getCurrentEuroExchangeRate();
+        assertNull(currentExchangeRate);
+    }
+
+    @Test
+    public void testGetCurrentEuroExchangeRate() {
+        Envelope envelope = setupEnvelope();
+        when(restTemplate.getForObject(ECB_SERVICE_URL + ECBEuroExchangeRateClient.EURO_FX_REF_DAILY_XML,
+                                       Envelope.class)).thenReturn(envelope);
+
+        DateCube currentExchangeRate = ecbEuroExchangeRateClient.getCurrentEuroExchangeRate();
+
+        assertNotNull(currentExchangeRate);
+        assertEquals(DateUtil.xmlGregorianCalendarFromDate(CURRENT_DATE), currentExchangeRate.getTime());
+
+        assertNotNull(currentExchangeRate.getCube());
+        assertEquals(1, currentExchangeRate.getCube().size());
+        CurrencyCube currencyCube = currentExchangeRate.getCube().get(0);
+        assertEquals(TARGET_CURRENCY, currencyCube.getCurrency());
+        assertEquals(RATE, currencyCube.getRate());
     }
 
     private Envelope setupEnvelope() {

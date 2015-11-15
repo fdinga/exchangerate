@@ -34,6 +34,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(properties = { "scheduler.exchangerate = * * * * * *"})
 public class DailyExchangeRateControllerIntegrationTest {
 
+    public static final String EXCHANGE_RATE_API_PATTERN = "/v1/exchange/%s/date/%s";
+
     @Autowired
     private WebApplicationContext webApplicationContext;
 
@@ -54,7 +56,7 @@ public class DailyExchangeRateControllerIntegrationTest {
     @Test
     public void testGetDailyExchangeRatesWithDateOlderThan90DaysReturnsBadRequest() throws Exception {
         LocalDate pastDate = LocalDate.now().minusDays(91);
-        this.mockMvc.perform(get(String.format("/v1/exchange/%s/date/%s", DailyExchangeRateController.EURO_CURRENCY_CODE,
+        this.mockMvc.perform(get(String.format(EXCHANGE_RATE_API_PATTERN, DailyExchangeRateController.EURO_CURRENCY_CODE,
                                                pastDate.format(StringToLocalDateConverter.DATE_FORMATTER))))
                 .andExpect(status().isBadRequest());
     }
@@ -62,7 +64,7 @@ public class DailyExchangeRateControllerIntegrationTest {
     @Test
     public void testGetDailyExchangeRatesWithDateInTheFutureReturnsBadRequest() throws Exception {
         LocalDate futureDate = LocalDate.now().plusDays(1);
-        this.mockMvc.perform(get(String.format("/v1/exchange/%s/date/%s", DailyExchangeRateController.EURO_CURRENCY_CODE,
+        this.mockMvc.perform(get(String.format(EXCHANGE_RATE_API_PATTERN, DailyExchangeRateController.EURO_CURRENCY_CODE,
                                                futureDate.format(StringToLocalDateConverter.DATE_FORMATTER))))
                 .andExpect(status().isBadRequest());
     }
@@ -70,18 +72,17 @@ public class DailyExchangeRateControllerIntegrationTest {
     @Test
     public void testGetDailyExchangeRatesWithCurrentDateReturnsOK() throws Exception {
         LocalDate currentDate = LocalDate.now();
-        this.mockMvc.perform(get(String.format("/v1/exchange/%s/date/%s", DailyExchangeRateController.EURO_CURRENCY_CODE,
+        this.mockMvc.perform(get(String.format(EXCHANGE_RATE_API_PATTERN, DailyExchangeRateController.EURO_CURRENCY_CODE,
                                                currentDate.format(StringToLocalDateConverter.DATE_FORMATTER))))
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void testGetDailyExchangeRatesWith90DaysAgoDateReturnsOKWithNoContent() throws Exception {
+    public void testGetDailyExchangeRatesWith90DaysAgoDateReturnsOK() throws Exception {
         LocalDate ninetyDaysAgo = LocalDate.now().minusDays(90);
-        this.mockMvc.perform(get(String.format("/v1/exchange/%s/date/%s", DailyExchangeRateController.EURO_CURRENCY_CODE,
+        this.mockMvc.perform(get(String.format(EXCHANGE_RATE_API_PATTERN, DailyExchangeRateController.EURO_CURRENCY_CODE,
                                                ninetyDaysAgo.format(StringToLocalDateConverter.DATE_FORMATTER))))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(0)));
+                .andExpect(status().isOk());
 
     }
 
@@ -92,9 +93,8 @@ public class DailyExchangeRateControllerIntegrationTest {
         if (currentDate.getDayOfWeek() == DayOfWeek.SATURDAY || currentDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
             currentDate = currentDate.minusDays(2);
         }
-        //sleep until the scheduler runs and loads the exchange rates in memory
-        Thread.sleep(2000);
-        this.mockMvc.perform(get(String.format("/v1/exchange/%s/date/%s", DailyExchangeRateController.EURO_CURRENCY_CODE,
+
+        this.mockMvc.perform(get(String.format(EXCHANGE_RATE_API_PATTERN, DailyExchangeRateController.EURO_CURRENCY_CODE,
                                                currentDate.format(StringToLocalDateConverter.DATE_FORMATTER))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(31)))

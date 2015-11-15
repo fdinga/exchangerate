@@ -1,14 +1,17 @@
 package com.fdinga.exchange.service.exchangerate;
 
+import com.fdinga.exchange.service.exchangerate.loader.ExchangeRatesLoaderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Service designed to fetch the daily euro exchange rates from the local cache
+ * Service designed to fetch the daily euro exchange rates from the local cache.
+ * On post construct, it triggers the loading of the exchange rates history, asynchronously.
  *
  * @author Florin Dinga
  */
@@ -19,6 +22,14 @@ public class DailyExchangeRateServiceImpl implements DailyExchangeRateService {
 
     @Autowired
     private DailyExchangeRatesCache dailyExchangeRatesCache;
+
+    @Autowired
+    private ExchangeRatesLoaderService exchangeRatesLoaderService;
+
+    @PostConstruct
+    public void loadExchangeRatesHistory() {
+        exchangeRatesLoaderService.loadExchangeRates();
+    }
 
     @Override
     public List<ExchangeRate> getEuroDailyExchangeRates(LocalDate date) {
