@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Service designed to periodically load the current exchange rates and the exchange rates 90 days history and store
- * them in-memory
+ * Service designed to periodically load the current exchange rates and the exchange rates history (90 days) and store
+ * them in-memory.
  *
  * @author Florin Dinga
  */
@@ -31,7 +31,7 @@ public class ExchangeRatesLoaderServiceImpl implements ExchangeRatesLoaderServic
     private DailyExchangeRatesCache dailyExchangeRatesCache;
 
     /**
-     * Loads the 90 days exchange rates history. It executes asyncronously after the app startup
+     * Loads the 90 days exchange rates history. It executes asynchronously after the app startup
      */
     @Async("asyncExecutor")
     public void loadExchangeRates() {
@@ -40,7 +40,8 @@ public class ExchangeRatesLoaderServiceImpl implements ExchangeRatesLoaderServic
     }
 
     /**
-     * The method executes based on the 'scheduler.exchangerate' cron expression defined in the application properties.
+     * Updates the current exchange rates. The method executes based on the 'scheduler.exchangerate' cron expression
+     * defined in the application properties.
      */
     @Scheduled(cron = "${scheduler.exchangerate}")
     public void updateCurrentDateExchangeRates() {

@@ -1,7 +1,5 @@
 package com.fdinga.exchange.util;
 
-import lombok.extern.slf4j.Slf4j;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -15,7 +13,6 @@ import static org.springframework.util.Assert.notNull;
 /**
  * @author Florin Dinga
  */
-@Slf4j
 public final class DateUtil {
 
     private DateUtil() {

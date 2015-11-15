@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  *
- * Client for the European central bank exchange rate service.
+ * Client for the European Central Bank exchange rate service.
  *
  * @author Florin Dinga
  */

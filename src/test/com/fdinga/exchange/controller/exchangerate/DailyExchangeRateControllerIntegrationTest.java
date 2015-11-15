@@ -12,6 +12,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -37,6 +38,7 @@ public class DailyExchangeRateControllerIntegrationTest {
 
     private static final String EXCHANGE_RATE_API_PATTERN = "/v1/exchange/%s/date/%s";
     private static final String TARGET_CURRENCY_CODE = "USD";
+    private static final int NUMBER_OF_TARGET_CURRENCIES = 31;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -95,7 +97,7 @@ public class DailyExchangeRateControllerIntegrationTest {
         this.mockMvc.perform(get(String.format(EXCHANGE_RATE_API_PATTERN, DailyExchangeRateController.EURO_CURRENCY_CODE,
                                                dayOfWeek.format(StringToLocalDateConverter.DATE_FORMATTER))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(31)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(NUMBER_OF_TARGET_CURRENCIES)))
                 .andExpect(jsonPath("$[0].targetCurrency").value(notNullValue()))
                 .andExpect(jsonPath("$[0].targetCurrency", is(TARGET_CURRENCY_CODE)))
                 .andExpect(jsonPath("$[0].rate").value(notNullValue()))
@@ -104,7 +106,7 @@ public class DailyExchangeRateControllerIntegrationTest {
     }
 
     @Test
-    public void testGetDailyExchangeRatesWithInvalidTargetCurrrencyReturnsBadRequest() throws Exception {
+    public void testGetDailyExchangeRatesWithInvalidTargetCurrencyReturnsBadRequest() throws Exception {
         this.mockMvc.perform(get(String.format(EXCHANGE_RATE_API_PATTERN + "?targetCurrency=%s",
                                                DailyExchangeRateController.EURO_CURRENCY_CODE,
                                                LocalDate.now().format(StringToLocalDateConverter.DATE_FORMATTER),
@@ -113,7 +115,7 @@ public class DailyExchangeRateControllerIntegrationTest {
     }
 
     @Test
-    public void testGetDailyExchangeRatesWithTargetCurrrencyAndDayOfWeekReturnsOKWithContent() throws Exception {
+    public void testGetDailyExchangeRatesWithTargetCurrencyAndDayOfWeekReturnsOKWithContent() throws Exception {
         LocalDate dayOfWeek = getDayOfWeek();
 
         this.mockMvc.perform(get(String.format(EXCHANGE_RATE_API_PATTERN + "?targetCurrency=%s",

@@ -41,7 +41,7 @@ public class ApplicationConfig {
     public TaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
         taskExecutor.setMaxPoolSize(asyncExecutorMaxPoolSize);
-        taskExecutor.setQueueCapacity(asyncExecutorMaxPoolSize);
+        taskExecutor.setQueueCapacity(asyncExecutorQueueCapacity);
         taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         taskExecutor.initialize();
         return taskExecutor;

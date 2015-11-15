@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 public class DailyExchangeRateServiceImplTest {
 
     private static final LocalDate DATE = LocalDate.now();
-    public static final String TARGET_CURRENCY_CODE = "USD";
+    private static final String TARGET_CURRENCY_CODE = "USD";
 
     @InjectMocks
     private DailyExchangeRateServiceImpl dailyExchangeRateService;

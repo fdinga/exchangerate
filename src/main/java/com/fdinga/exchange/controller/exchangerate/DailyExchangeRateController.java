@@ -20,6 +20,7 @@ public class DailyExchangeRateController {
 
     public static final String EURO_CURRENCY_CODE = "eur";
     public static final String DATE = "date";
+    public static final String TARGET_CURRENCY = "targetCurrency";
 
     @Autowired
     private DailyExchangeRateService dailyExchangeRateService;
@@ -27,8 +28,8 @@ public class DailyExchangeRateController {
     @RequestMapping("/v1/exchange/" + EURO_CURRENCY_CODE + "/date/{date}")
     @ResponseBody
     public List<ExchangeRate> getForeignExchangeRates(@PathVariable(DATE) LocalDate date,
-        @RequestParam(value="targetCurrency", required = false) Currency targetCurrency) {
-        log.debug("GET foreign exchange rate for source currency '{}', date '{}' and target currency '{}'",
+        @RequestParam(value= TARGET_CURRENCY, required = false) Currency targetCurrency) {
+        log.debug("GET foreign exchange rates for source currency '{}', date '{}' and target currency '{}'",
                   EURO_CURRENCY_CODE, date, targetCurrency);
         return dailyExchangeRateService.getEuroDailyExchangeRates(date, targetCurrency);
     }

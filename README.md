@@ -1,6 +1,6 @@
 # Foreign Exchange Rate API
 
-###Fetches the conversion rate for Euro to any other currency supported by the European Central Bank
+###The service fetches the conversion rate for Euro to any other currency supported by the European Central Bank
 
 ##Requirements
 ```
@@ -19,10 +19,11 @@ java -jar target/exchange-1.0-SNAPSHOT.jar -Xms512M -Xmx512M -Duser.timezone=CET
 
 ##API Documentation
 
-### GET Exchange Rates for Euro
+### GET Exchange Rates for Euro by date and target currency
 
-Return the conversion rate for Euro to all the currencies for the specified date. The date should be in the interval [currentDate - 90days, currentDate]. 
-The API provides an optional 'targetCurrency' query parameter which filters only the exchange rates for the specified currency.
+Return the conversion rate for Euro to all the currencies for the specified date.
+The date needs to be in the interval [currentDate - 90days, currentDate]. Otherwise, the service returns 400 Bad Request.
+The API provides an optional 'targetCurrency' query parameter to filter only the exchange rates of the specified target currency.
 
 ### Request
 GET /v1/exchange/eur/date/<b>{date}</b>/?targetCurrency=<b>{targetCurrency}</b>
@@ -31,7 +32,7 @@ GET /v1/exchange/eur/date/<b>{date}</b>/?targetCurrency=<b>{targetCurrency}</b>
 
 | Name                 | Required | Description                                                   |
 | -------------------- |:--------:| ------------------------------------------------------------- |
-| `date`               | ✓        | the date; suported format is 'dd-MM-yyyy'                     |
+| `date`               | ✓        | the date; supported format is 'dd-MM-yyyy'                    |
 
 
 #### Query Parameters
